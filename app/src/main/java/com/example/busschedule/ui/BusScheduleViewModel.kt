@@ -19,11 +19,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.busschedule.BusScheduleApplication
 import com.example.busschedule.data.BusSchedule
+import com.example.busschedule.data.BusScheduleRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
-class BusScheduleViewModel: ViewModel() {
+class BusScheduleViewModel(busScheduleRepository: BusScheduleRepository): ViewModel() {
 
     // Get example bus schedule
     fun getFullSchedule(): Flow<List<BusSchedule>> = flowOf(
@@ -50,7 +52,8 @@ class BusScheduleViewModel: ViewModel() {
     companion object {
         val factory : ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                BusScheduleViewModel()
+                val repository = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as BusScheduleApplication).container.busScheduleRepository
+                BusScheduleViewModel(repository)
             }
         }
     }
