@@ -99,7 +99,13 @@ fun BusScheduleApp(
         AddScheduleDialog(
             onDismissRequest = { showAddDialog = false },
             onConfirm = { stopName, arrivalTime ->
-                // TODO: Chamar o ViewModel para salvar o novo horário no Room
+                val arrivalTimeInt = parseTimeStringToEpochSeconds(arrivalTime)
+                viewModel.addSchedule(
+                    BusSchedule(
+                        stopName = stopName,
+                        arrivalTimeInMillis = arrivalTimeInt
+                    )
+                )
                 showAddDialog = false
             }
         )
@@ -109,7 +115,7 @@ fun BusScheduleApp(
         DeleteConfirmationDialog(
             onDismissRequest = { scheduleToDelete = null },
             onConfirm = {
-                // TODO: Chamar o ViewModel para remover o item no Room
+                viewModel.deleteSchedule(schedule)
                 scheduleToDelete = null
             }
         )
@@ -501,4 +507,23 @@ fun DeleteConfirmationDialogPreview() {
             onConfirm = {}
         )
     }
+}
+
+private fun parseTimeStringToEpochSeconds(timeString: String): Int {
+    val formats = listOf("h:mm a", "hh:mm a", "H:mm", "HH:mm")
+    for (format in formats) {
+        try {
+            val sdf = SimpleDateFormat(format, Locale.getDefault())
+            val date = sdf.parse(timeString.trim())
+            if (date != null) {
+                val calendarNow = java.util.Calendar.getInstance()
+                val calendarTime = java.util.Calendar.getInstance().apply { time = date }
+                calendarNow.set(java.util.Calendar.HOUR_OF_DAY, calendarTime.get(java.util.Calendar.HOUR_OF_DAY))
+                calendarNow.set(java.util.Calendar.MINUTE, calendarTime.get(java.util.Calendar.MINUTE))
+                calendarNow.set(java.util.Calendar.SECOND, 0)
+                return (calendarNow.timeInMillis / 1000).toInt()
+            }
+        } catch (_: Exception) { }
+    }
+    return (System.currentTimeMillis() / 1000).toInt()
 }

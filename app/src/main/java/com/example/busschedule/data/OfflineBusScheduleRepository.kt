@@ -7,6 +7,8 @@ class OfflineBusScheduleRepository(private val scheduleDao: ScheduleDao) : BusSc
 
     override fun getBusScheduleStream(id: Int): Flow<BusSchedule?> = scheduleDao.getSchedule(id)
 
+    override fun getScheduleFor(stopName: String): Flow<List<BusSchedule>> = scheduleDao.getScheduleFor(stopName)
+
     override suspend fun insertBusSchedule(busSchedule: BusSchedule) = scheduleDao.insert(busSchedule)
 
     override suspend fun deleteBusSchedule(busSchedule: BusSchedule) = scheduleDao.delete(busSchedule)

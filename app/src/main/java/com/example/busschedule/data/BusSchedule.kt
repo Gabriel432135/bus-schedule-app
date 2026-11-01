@@ -21,7 +21,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "schedule")
 data class BusSchedule(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Int = 0,
 
     val stopName: String,
     val arrivalTimeInMillis: Int
