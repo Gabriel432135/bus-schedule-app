@@ -19,18 +19,62 @@ import android.app.Activity
 import android.os.Build
 import android.view.View
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
+
+data class AppDimensions(
+    val paddingSmall: Dp = 2.dp,
+    val paddingMedium: Dp = 6.dp,
+    val paddingLarge: Dp = 12.dp,
+    val paddingExtraLarge: Dp = 16.dp,
+    val cardElevation: Dp = 2.dp,
+    val imageHeight: Dp = 200.dp,
+    val columnCount: Int = 1
+)
+
+data class AppShape(
+    val small: Shape = RoundedCornerShape(2.dp), // Mais quadrado
+    val medium: Shape = RoundedCornerShape(4.dp), // Mais quadrado (usado nos cards)
+    val large: Shape = RoundedCornerShape(8.dp),
+    val extraLarge: Shape = RoundedCornerShape(24.dp),
+
+    val smallHalf: Shape = RoundedCornerShape(bottomStart = 2.dp, bottomEnd = 2.dp),
+    val mediumHalf: Shape = RoundedCornerShape(bottomStart = 4.dp, bottomEnd = 4.dp),
+    val largeHalf: Shape = RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp),
+    val extraLargeHalf: Shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp),
+)
+
+val localDimensions = staticCompositionLocalOf { AppDimensions() }
+val localShape = staticCompositionLocalOf { AppShape() }
+
+object AppTheme {
+    val dimensions: AppDimensions
+        @Composable
+        get() = localDimensions.current
+    val shape: AppShape
+
+        @Composable
+        get() = localShape.current
+}
+
+
 
 private val LightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -118,12 +162,16 @@ fun BusScheduleTheme(
             setUpEdgeToEdge(view, darkTheme)
         }
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(
+        localDimensions provides AppDimensions(),
+        localShape provides AppShape()
+    ) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }
 
 /**
